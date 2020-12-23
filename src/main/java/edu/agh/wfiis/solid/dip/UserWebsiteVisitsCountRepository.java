@@ -1,9 +1,26 @@
+package edu.agh.wfiis.solid.dip;
+
+import java.net.URL;
 import java.util.Date;
 
 public interface UserWebsiteVisitsCountRepository {
+    OperationResult save(UserWebsiteVisitsCount counts);
+    int read(String username, URL url, Date date);
+}
 
-    int read(String username, Date visitDate);
+class UserWebsiteVisitsCount {
+    String username;
+    URL url;
+    Date date;
+    int count;
+}
 
-    void save(String username, Date visitDate, int visitsCount);
+class OperationResult {
+    public final String result;
+    public final boolean isSuccessful;
 
+    public OperationResult(String result, boolean isSuccessful) {
+        this.result = result;
+        this.isSuccessful = isSuccessful;
+    }
 }
