@@ -1,3 +1,4 @@
+package edu.agh.wfiis.solid.dip;
 import java.util.Date;
 
 public interface UserWebsiteVisitsCountRepository {
