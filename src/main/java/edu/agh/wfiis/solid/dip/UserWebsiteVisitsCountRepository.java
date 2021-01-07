@@ -4,23 +4,25 @@ import java.net.URL;
 import java.util.Date;
 
 public interface UserWebsiteVisitsCountRepository {
-    OperationResult save(UserWebsiteVisitsCount counts);
-    int read(String username, URL url, Date date);
+    void save(UserWebsiteVisitsCount counts) throws OperationException;
+    int read(UserWebsiteVisitsId id) throws OperationException;
 }
 
-class UserWebsiteVisitsCount {
+class OperationException extends RuntimeException{
+    public OperationException(String message) {
+        super(message);
+    }
+}
+
+class UserWebsiteVisitsId {
     String username;
     URL url;
     Date date;
-    int count;
 }
 
-class OperationResult {
-    public final String result;
-    public final boolean isSuccessful;
+////db.UserWebsiteVisitsCounts.insert({"username":"marcin", "url":"dummy", "count":1})
 
-    public OperationResult(String result, boolean isSuccessful) {
-        this.result = result;
-        this.isSuccessful = isSuccessful;
-    }
+class UserWebsiteVisitsCount {
+    UserWebsiteVisitsId id;
+    int count;
 }
