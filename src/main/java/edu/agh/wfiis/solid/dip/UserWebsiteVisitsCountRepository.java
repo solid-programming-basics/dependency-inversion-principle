@@ -16,13 +16,13 @@ class OperationException extends RuntimeException{
 
 class UserWebsiteVisitsId {
     String username;
-    URL url;
+    String url;
     Date date;
 }
 
 ////db.UserWebsiteVisitsCounts.insert({"username":"marcin", "url":"dummy", "count":1})
 
 class UserWebsiteVisitsCount {
-    UserWebsiteVisitsId id;
-    int count;
+    public UserWebsiteVisitsId id;
+    public int count;
 }
