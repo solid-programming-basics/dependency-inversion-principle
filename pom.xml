@@ -6,7 +6,12 @@
    <groupId>edu.agh.wfiis.solid</groupId>
    <artifactId>dependency-inversion-principle</artifactId>
    <version>1.0-SNAPSHOT</version>
+
    <packaging>jar</packaging>
+
+   <properties>
+   <mongodb-driver-sync.version>3.11.0</mongodb-driver-sync.version>
+   </properties>
 
    <dependencies>
       <dependency>
@@ -19,6 +24,11 @@
          <artifactId>lombok</artifactId>
          <version>1.16.0</version>
       </dependency>
+         <dependency>
+            <groupId>org.mongodb</groupId>
+            <artifactId>mongodb-driver-sync</artifactId>
+            <version>${mongodb-driver-sync.version}</version>
+         </dependency>
    </dependencies>
 
    <build>
