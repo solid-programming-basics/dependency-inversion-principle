@@ -1,5 +1,6 @@
 package edu.agh.wfiis.solid.dip;
 
+import com.mongodb.Mongo;
 import com.mongodb.MongoException;
 
 import com.mongodb.client.MongoClient;
@@ -9,12 +10,12 @@ import com.mongodb.client.MongoDatabase;
 import org.bson.Document;
 import static com.mongodb.client.model.Filters.*;
 
-
 public class UserWebsiteVisitsCountMongoDBRepository implements UserWebsiteVisitsCountRepository {
     private MongoCollection<Document> userWebsiteVisitsCountCollection;
+    private MongoDatabase db;
 
-    public UserWebsiteVisitsCountMongoDBRepository() {
-
+    public UserWebsiteVisitsCountMongoDBRepository(MongoDatabase mongoDatabase) {
+        this.db = mongoDatabase;
     }
 
     @Override
@@ -24,31 +25,36 @@ public class UserWebsiteVisitsCountMongoDBRepository implements UserWebsiteVisit
                 .append("url", counts.id.url)
                 .append("date", counts.id.date)
                 .append("count", counts.count);
-        try (MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017")) {
 
-            MongoDatabase db = mongoClient.getDatabase("solid_dependency_inversion");
+        try {
             this.userWebsiteVisitsCountCollection = db.getCollection("user_website_visits_count");
-            try {
-                this.userWebsiteVisitsCountCollection.insertOne(userWebsiteVisitsCount);
-            } catch(MongoException e) {
-                throw new OperationException(e.getMessage());
-            }
+            this.userWebsiteVisitsCountCollection.insertOne(userWebsiteVisitsCount);
+        } catch(MongoException e) {
+            throw new OperationException(e.getMessage());
         }
+
+//        try (MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017")) {
+//            MongoDatabase db = mongoClient.getDatabase("solid_dependency_inversion");
+//            this.userWebsiteVisitsCountCollection = db.getCollection("user_website_visits_count");
+//            try {
+//                this.userWebsiteVisitsCountCollection.insertOne(userWebsiteVisitsCount);
+//            } catch(MongoException e) {
+//                throw new OperationException(e.getMessage());
+//            }
+//        }
     }
 
     @Override
     public int read(UserWebsiteVisitsId id) throws OperationException {
         try {
-            try (MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017")) {
-                MongoDatabase db = mongoClient.getDatabase("solid_dependency_inversion");
-                this.userWebsiteVisitsCountCollection = db.getCollection("user_website_visits_count");
-                Document foundUserWebsiteVisitsCount = this.userWebsiteVisitsCountCollection.find(and(
-                        eq("username", id.username),
-                        eq("url", id.url),
-                        eq("date", id.date)
-                )).first();
-                return (int) foundUserWebsiteVisitsCount.get("count");
-            }
+            this.userWebsiteVisitsCountCollection = db.getCollection("user_website_visits_count");
+            Document foundUserWebsiteVisitsCount = this.userWebsiteVisitsCountCollection.find(and(
+                    eq("username", id.username),
+                    eq("url", id.url),
+                    eq("date", id.date)
+            )).first();
+            // May produce NullPoinerException!
+            return (int) foundUserWebsiteVisitsCount.get("count");
         } catch(MongoException e) {
             throw new OperationException(e.getMessage());
         }
