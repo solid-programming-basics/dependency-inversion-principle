@@ -10,29 +10,33 @@ import static com.mongodb.client.model.Filters.and;
 import static com.mongodb.client.model.Filters.eq;
 
 public class UserWebsiteVisitsCountMongoDbRepository implements UserWebsiteVisitsCountRepository{
+    private static final String USERNAME_FIELD = "username";
+    private static final String VISITS_COUNT_FIELD = "visitsCount";
+    private static final String VISITS_DATE_FIELD = "visitDate";
+    private static final String ID_FIELD = "_id";
+    private static final String COLLECTION_NAME = "userWebsiteVisitsCounts";
+
+    private final MongoCollection<Document> userWebsiteVisitsCounts;
+            
+    public UserWebsiteVisitsCountMongoDbRepository(MongoDatabase database) {
+        this.userWebsiteVisitsCounts = database.getCollection(COLLECTION_NAME);
+    }
 
     @Override
     public int read(String username, Date visitDate) {
-        try (MongoClient mongoClient = MongoClients.create(System.getProperty("mongodb.uri"))) {
-            MongoDatabase database = mongoClient.getDatabase("dipExample");
-            MongoCollection<Document> userWebsiteVisitsCounts = database.getCollection("userWebsiteVisitsCounts");
-            FindIterable<Document> documents = userWebsiteVisitsCounts.find(and(eq("username", username), eq("username", username)));
-            Document first = documents.first();
-            return (int) first.get("visitsCount");
-        }
+        FindIterable<Document> documents = userWebsiteVisitsCounts.
+                find(and(eq(USERNAME_FIELD, username), eq(USERNAME_FIELD, username)));
+        Document first = documents.first();
+        return (int) first.get(VISITS_COUNT_FIELD);
     }
 
     @Override
     public void save(String username, Date visitDate, int visitsCount) {
-        try (MongoClient mongoClient = MongoClients.create(System.getProperty("mongodb.uri"))) {
-            MongoDatabase database = mongoClient.getDatabase("dipExample");
-            MongoCollection<Document> userWebsiteVisitsCounts = database.getCollection("userWebsiteVisitsCounts");
-            Document userWebsiteVisitsCount = new Document("_id", new ObjectId());
-            userWebsiteVisitsCount.append("username", username)
-                    .append("visitDate", visitDate)
-                    .append("visitsCount", visitsCount);
-            userWebsiteVisitsCounts.insertOne(userWebsiteVisitsCount);
-        }
+        Document userWebsiteVisitsCount = new Document(ID_FIELD, new ObjectId());
+        userWebsiteVisitsCount.append(USERNAME_FIELD, username)
+                .append(VISITS_DATE_FIELD, visitDate)
+                .append(VISITS_COUNT_FIELD, visitsCount);
+        userWebsiteVisitsCounts.insertOne(userWebsiteVisitsCount);
     }
 
 }
